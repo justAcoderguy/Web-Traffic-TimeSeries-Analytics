@@ -1,0 +1,10 @@
+services:
+  app:
+    image: analytics-api:v1
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - PORT=8002 # used in docker-run.sh
+    ports:
+      - "8002:8002" # host/system : container port
