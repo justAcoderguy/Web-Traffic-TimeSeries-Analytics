@@ -4,10 +4,27 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    depends_on:
+      - db_service
     environment:
       - PORT=8002 # used in docker-run.sh
+      - DATABASE_URL=postgresql+psycopg://time-user:time-pw@db_service:5432/timescaledb
     ports:
       - "8002:8002" # host/system : container port
     volumes:
-      - ./src:/app:rw # continuously copy it in
+      - ./src:/code:rw # continuously copy it in
+  
+  db_service:
+    image: timescale/timescaledb:latest-pg17
+    environment:
+      - POSTGRES_USER=time-user
+      - POSTGRES_PASSWORD=time-pw 
+      - POSTGRES_DB=timescaledb
+    ports:
+      - "5432:5432"
+    volumes:
+      - timescaledb_data:/var/lib/postgresql/data
 
+
+volumes:
+  timescaledb_data: 
