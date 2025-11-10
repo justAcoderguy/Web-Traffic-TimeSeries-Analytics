@@ -8,16 +8,11 @@ import sqlmodel
 
 class EventModel(TimescaleModel, table=True):
     page: str = Field(index=True)
-    description: Optional[str] = ""
-    # Below two are provided as PK by timescaledb as default
-
-    # id: Optional[int] = Field(default=None, primary_key=True)
-
-    # created_at: datetime = Field(
-    #     default_factory=get_utc,
-    #     sa_type=sqlmodel.DateTime(timezone=True),
-    #     nullable=False
-    # ) 
+    user_agent: Optional[str] = Field(default="", index=True) # browser
+    ip_address: Optional[str] = Field(default="", index=True)
+    referrer: Optional[str] = Field(default="", index=True) 
+    session_id: Optional[str] = Field(index=True)
+    duration: Optional[int] = Field(default=0) 
 
     __chunk_time_interval__ = "INTERVAL 1 day"
     __drop_after__ = "INTERVAL 4 months"
@@ -25,17 +20,21 @@ class EventModel(TimescaleModel, table=True):
 
 class EventCreateSchema(TimescaleModel):
     page: str
-    description: Optional[str] = Field(default="")
+    user_agent: Optional[str] = Field(default="", index=True) # browser
+    ip_address: Optional[str] = Field(default="", index=True)
+    referrer: Optional[str] = Field(default="", index=True) 
+    session_id: Optional[str] = Field(index=True)
+    duration: Optional[int] = Field(default=0) 
 
 
-class EventUpdateSchema(TimescaleModel):
-    description: str
 
-
-class EventListSchema(TimescaleModel):
-    results: List[EventModel]
+class EventBucketSchema(TimescaleModel):
+    bucket: datetime
+    page: str
+    ua: Optional[str] = ""
+    operating_system: Optional[str] = "" # infering from ua ( user_agent )
+    avg_duration: Optional[float] = 0.0
     count: int
-
     
 
 
